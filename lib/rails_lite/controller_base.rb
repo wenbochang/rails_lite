@@ -39,10 +39,16 @@ class ControllerBase
   # use ERB and binding to evaluate templates
   # pass the rendered html to render_content
   def render(template_name)
+    input = File.read("views/#{self.class.to_s.underscore}/#{template_name}.html.erb")
+    template = ERB.new(input)
+
+    render_content(template.result(binding), "text/html")
+    @session.store_session(@res)
   end
 
   # method exposing a `Session` object
   def session
+    @session ||= Session.new(@req)
   end
 
   # use this with the router to call action_name (:index, :show, :create...)
